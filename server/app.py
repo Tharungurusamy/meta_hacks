@@ -62,6 +62,30 @@ def reset(
     }
 
 
+@app.post("/reset")
+def reset_post(body: dict[str, Any] | None = None) -> dict[str, Any]:
+    """
+    Compatibility endpoint for validators expecting POST /reset.
+    Accepts optional JSON body: { "task_id": "...", "seed": 123, "episode_id": "..." }.
+    """
+    env = get_env()
+    payload = body or {}
+    task_id = payload.get("task_id")
+    seed = payload.get("seed")
+    episode_id = payload.get("episode_id")
+    try:
+        obs = env.reset(seed=seed, episode_id=episode_id, task_id=task_id)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e)) from e
+    st = env.state
+    return {
+        "observation": _serialize_observation(obs),
+        "reward": obs.reward,
+        "done": obs.done,
+        "state": st.model_dump(mode="json"),
+    }
+
+
 @app.post("/step")
 def step(action: CyberSecAction) -> dict[str, Any]:
     env = get_env()
