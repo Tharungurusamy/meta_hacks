@@ -65,7 +65,15 @@ def reset(
 @app.post("/step")
 def step(action: CyberSecAction) -> dict[str, Any]:
     env = get_env()
-    obs = env.step(action)
+    try:
+        obs = env.step(action)
+    except RuntimeError as e:
+        # Common client mistake: calling /step before /reset.
+        # Return a clear 4xx response instead of a generic 500.
+        raise HTTPException(
+            status_code=400,
+            detail="Environment not reset. Call GET /reset before POST /step.",
+        ) from e
     st = env.state
     return {
         "observation": _serialize_observation(obs),
