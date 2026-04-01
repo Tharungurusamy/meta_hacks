@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CyberSec-OpenEnv</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <header class="top">
+    <h1>CyberSec-OpenEnv</h1>
+    <p class="subtitle">Security operations log review</p>
+  </header>
+
+  <main class="grid">
+    <section class="card">
+      <h2>Current log</h2>
+      {% if observation %}
+      <dl class="meta">
+        <dt>Log ID</dt><dd>{{ observation.log_id }}</dd>
+        <dt>Severity</dt><dd>{{ observation.severity_hint }}</dd>
+        <dt>Task</dt><dd>{{ observation.task_id }} ({{ observation.difficulty }})</dd>
+      </dl>
+      <pre class="logbox">{{ observation.log_text }}</pre>
+      {% else %}
+      <p class="muted">Call <code>GET /reset</code> to load a task.</p>
+      {% endif %}
+    </section>
+
+    <section class="card">
+      <h2>Session</h2>
+      <dl class="meta">
+        <dt>Episode</dt><dd>{{ state.episode_id or "—" }}</dd>
+        <dt>Steps</dt><dd>{{ state.step_count }} / {{ state.max_steps }}</dd>
+        <dt>Done</dt><dd>{{ state.done }}</dd>
+      </dl>
+    </section>
+
+    <section class="card wide">
+      <h2>Actions</h2>
+      {% if observation and observation.history %}
+      <ul class="actions">
+        {% for h in observation.history %}
+        <li><span class="tag">{{ h.action_type }}</span> {{ h.content }}</li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p class="muted">No actions yet.</p>
+      {% endif %}
+    </section>
+
+    <section class="card wide">
+      <h2>Reward and feedback</h2>
+      <p class="score">Last grader score: <strong>{{ observation.last_grader_score if observation else "—" }}</strong></p>
+      <p class="feedback">{{ observation.feedback if observation else state.last_feedback or "—" }}</p>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <p>Use the API: <code>GET /reset?task_id=...</code>, <code>POST /step</code>, <code>GET /state</code></p>
+  </footer>
+</body>
+</html>

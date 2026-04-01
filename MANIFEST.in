@@ -1,0 +1,4 @@
+include README.md openenv.yaml pyproject.toml requirements.txt
+recursive-include data *.json
+recursive-include server/templates *.html
+recursive-include server/static *.css

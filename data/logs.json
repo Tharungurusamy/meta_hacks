@@ -1,0 +1,41 @@
+{
+  "tasks": [
+    {
+      "id": "task_01_phishing",
+      "difficulty": "easy",
+      "log_id": "mail-2024-1142",
+      "log_text": "[EMAIL_GATEWAY] subject='Urgent: Verify your payroll account' sender=hr-portal-alerts@suspicious-login.example from=203.0.113.50 dkim=fail spf=softfail url_href=http://payroll-verify.example/reset?token=abc body_snippet='Click here to confirm credentials within 1 hour or access will be suspended.'",
+      "severity_hint": "medium",
+      "expected_classification": "phishing",
+      "respond_keywords": ["warn", "user", "suspicious"],
+      "terminal_action": "respond",
+      "allow_escalation": false,
+      "min_steps": 2
+    },
+    {
+      "id": "task_02_brute_force",
+      "difficulty": "medium",
+      "log_id": "ssh-2024-8891",
+      "log_text": "[SSH_AUTH] host=edge-fw-01 src_ip=198.51.100.22 user=root events=45 result=failed_password window=300s last_line='Failed password for root from 198.51.100.22 port 44221 ssh2'",
+      "severity_hint": "high",
+      "expected_classification": "brute_force",
+      "respond_keywords": ["block", "ip"],
+      "terminal_action": "respond",
+      "allow_escalation": false,
+      "min_steps": 2
+    },
+    {
+      "id": "task_03_exfil_chain",
+      "difficulty": "hard",
+      "log_id": "multi-2024-4401",
+      "log_text": "[AUTH_OK] vpn=corp-vpn user=jdoe src=192.0.2.45 ts=10:01:02 session=new\n[FLOW] dst=s3.amazonaws.com bucket=backup-copy-xyz bytes_out=4200000000 duration=120s host=finance-db-02\n[ALERT] anomaly='large outbound transfer to external object storage' correlation_id=EXFIL-4401",
+      "severity_hint": "critical",
+      "expected_classification": "data_exfiltration",
+      "escalate_keywords": ["investigation", "incident"],
+      "terminal_action": "escalate",
+      "allow_escalation": true,
+      "min_steps": 2,
+      "requires_classify_before_escalate": true
+    }
+  ]
+}
